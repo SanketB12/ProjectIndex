@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Table</title>
+    <style>
+      table {
+        border: 1px solid black;
+        margin-bottom: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <label for="input1">Enter first value</label>
+    <input type="text" placeholder="Row#Column#Value" id="input1" />
+    <label for="input2">Enter Second value</label>
+    <input type="text" placeholder="Row#Column#Value" id="input2" />
+    <button id="createtables">Create tables</button>
+    <div id="tablecontainer"></div>
+    <script>
+      function generateTables() {
+        const input1 = document
+          .getElementById("input1")
+          .value.split("#")
+          .map(Number);
+        const input2 = document
+          .getElementById("input2")
+          .value.split("#")
+          .map(Number);
+
+        const row1 = input1[0];
+        const col1 = input1[1];
+        const row2 = input2[0];
+        const col2 = input2[1];
+
+        if (row1 === row2 && col1 === col2) {
+          const table1 = createTable(input1);
+          const table2 = createTable(input2);
+          const table3 = createThirdTable(input1, input2);
+
+          document.getElementById("tablecontainer").innerHTML = "";
+          document
+            .getElementById("tablecontainer")
+            .appendChild(document.createElement("br"));
+          document.getElementById("tablecontainer").appendChild(table1);
+          document
+            .getElementById("tablecontainer")
+            .appendChild(document.createElement("br"));
+          document.getElementById("tablecontainer").appendChild(table2);
+          document
+            .getElementById("tablecontainer")
+            .appendChild(document.createElement("br"));
+          document.getElementById("tablecontainer").appendChild(table3);
+        } else {
+          const table1 = createTable(input1);
+          const table2 = createTable(input2);
+
+          document.getElementById("tablecontainer").innerHTML = "";
+          document
+            .getElementById("tablecontainer")
+            .appendChild(document.createElement("br"));
+          document.getElementById("tablecontainer").appendChild(table1);
+          document
+            .getElementById("tablecontainer")
+            .appendChild(document.createElement("br"));
+          document.getElementById("tablecontainer").appendChild(table2);
+        }
+      }
+
+      function createTable(input) {
+        const row1 = input[0];
+        const col1 = input[1];
+        const value1 = input[2];
+        const table = document.createElement("table");
+        for (let i = 0; i < row1; i++) {
+          const r = document.createElement("tr");
+          for (let j = 0; j < col1; j++) {
+            const c = document.createElement("td");
+            const num = (i + 1) * (value1 + j);
+            c.textContent = num;
+            r.appendChild(c);
+          }
+          table.appendChild(r);
+        }
+        return table;
+      }
+
+      function createThirdTable(input1, input2) {
+        const row1 = input1[0];
+        const col1 = input1[1];
+        const value1 = input1[2];
+        const value2 = input2[2];
+        const table = document.createElement("table");
+        for (let i = 0; i < row1; i++) {
+          const r = document.createElement("tr");
+          for (let j = 0; j < col1; j++) {
+            const c = document.createElement("td");
+            if ((i + 1) * (value1 + j) === (i + 1) * (value2 + j)) {
+              const num = (i + 1) * (value1 + j);
+              c.textContent = num;
+              r.appendChild(c);
+            } else {
+              const num = (i + 1) * (value1 + j) * ((i + 1) * (value2 + j));
+              c.textContent = num;
+              r.appendChild(c);
+            }
+          }
+          table.appendChild(r);
+        }
+        return table;
+      }
+
+      document
+        .getElementById("createtables")
+        .addEventListener("click", generateTables);
+    </script>
+  </body>
+</html>

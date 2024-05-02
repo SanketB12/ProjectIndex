@@ -1,0 +1,198 @@
+<!-- local index html file -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+</head>
+<body>
+    <h2>User Registration</h2>
+    <form id="registrationForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" required><br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required><br><br>
+        <button type="submit">Register</button>
+    </form>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+<!-- local display html file -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Users</title>
+</head>
+<body>
+    <h2>Registered Users</h2>
+    <ul id="userList"></ul>
+
+    <script src="display.js"></script>
+</body>
+</html>
+
+<!-- script.js file -->
+// Function to handle form submission
+function handleSubmit(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Get user input values
+    const username = document.getElementById('username').value;
+    const email = document.getElementById('email').value;
+
+    // Create an object to hold user data
+    const userData = {
+        username,
+        email
+    };
+
+    // Get existing data from localStorage or initialize an empty array
+    const existingData = JSON.parse(localStorage.getItem('userData')) || [];
+
+    // Add new user data to the array
+    existingData.push(userData);
+
+    // Store the updated array in localStorage
+    localStorage.setItem('userData', JSON.stringify(existingData));
+    localStorage.setItem('name', username);
+
+    // Redirect to the new page to display the data
+    window.location.href = 'display.html';
+}
+
+// Attach form submission event listener
+document.getElementById('registrationForm').addEventListener('submit', handleSubmit);
+
+<!-- display.js file -->
+// Function to display user data
+function displayUserData() {
+    // Get username from localStorage
+    const username = localStorage.getItem('name');
+
+    // Get user data from localStorage
+    const userData = JSON.parse(localStorage.getItem('userData'));
+
+    // Check if there's any data
+    if (userData) {
+        // Get the list element
+        const userList = document.getElementById('userList');
+
+        // Find and display data for the logged-in user
+        const loggedInUser = userData.find(user => user.username === username);
+        if (loggedInUser) {
+            const listItem = document.createElement('li');
+            listItem.textContent = `Username: ${loggedInUser.username}, Email: ${loggedInUser.email}`;
+            userList.appendChild(listItem);
+        } else {
+            // If no data found for the logged-in user, display a message
+            document.getElementById('userList').textContent = 'No data found for this user.';
+        }
+    } else {
+        // If no data found, display a message
+        document.getElementById('userList').textContent = 'No registered users yet.';
+    }
+}
+
+// Call the function to display user data when the page loads
+displayUserData();
+
+<!-- ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- -->
+
+<!-- AJAX method html file -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Registration</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h2>User Registration Form</h2>
+  <form id="registrationForm">
+    <label for="name">Name:</label><br>
+    <input type="text" id="name" name="name" required><br>
+    <label for="email">Email:</label><br>
+    <input type="email" id="email" name="email" required><br>
+    <label for="username">Username:</label><br>
+    <input type="text" id="username" name="username" required><br>
+    <label for="phone">Phone:</label><br>
+    <input type="text" id="phone" name="phone" required><br><br>
+    <input type="submit" value="Register">
+  </form>
+
+  <h2>User List</h2>
+  <ul id="userList"></ul>
+
+  <script>
+    var enteredUser;
+    $(document).ready(function(){
+      // Function to handle form submission
+      $('#registrationForm').submit(function(event){
+        event.preventDefault();
+        var userData = {
+          name: $('#name').val(),
+          email: $('#email').val(),
+          username: $('#username').val(),
+          phone: $('#phone').val()
+        };
+        
+        // Save user data to localStorage
+        saveUserData(userData);
+        
+        // AJAX POST request to push data to API
+        $.ajax({
+          type: 'POST',
+          url: 'https://jsonplaceholder.typicode.com/users',
+          data: userData,
+          success: function(response){
+            console.log('Registration successful:', response);
+            // Fetch updated user list after successful registration
+            fetchUserList();
+          },
+          error: function(xhr, status, error){
+            console.error('Registration failed:', error);
+          }
+        });
+      });
+
+      // Function to fetch user list from API
+      function fetchUserList() {
+        $.ajax({
+          type: 'GET',
+          url: 'https://jsonplaceholder.typicode.com/users',
+          success: function(users){
+            $('#userList').empty(); // Clear the existing list
+            users.forEach(function(user){
+              $('#userList').append('<li>' + user.name + ' - ' + user.email + '</li>');
+            });
+            enteredUser = JSON.parse(localStorage.getItem('users')) || [];
+            enteredUser.forEach(function(user){
+              $('#userList').append('<li>' + user.name + ' - ' + user.email + '</li>');
+            });
+
+          },
+          error: function(xhr, status, error){
+            console.error('Failed to fetch user list:', error);
+          }
+        });
+      }
+
+      // Function to save user data to localStorage
+      function saveUserData(userData) {
+        enteredUser = JSON.parse(localStorage.getItem('users')) || [];
+        enteredUser.push(userData);
+        localStorage.setItem('users', JSON.stringify(enteredUser));
+      }
+
+      // Initial fetch of user list on page load
+      fetchUserList();
+    });
+  </script>
+</body>
+</html>
